@@ -167,10 +167,10 @@ jobs:
       #        az storage blob upload --auth-mode=login -f "$i" -c ${{ secrets.AZURE_CONTAINER_NAME }} \
       #        --account-name ${{ secrets.AZURE_ACCOUNT_NAME }} --overwrite -n nginx-agent/${GITHUB_REF##*/}/${i##*/}
       #      done 
-      - name: Azure Logout
-        run: |
-          az logout
-        if: always()
+      #- name: Azure Logout
+      #  run: |
+      #    az logout
+      #  if: always()
       - name: Upload Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
