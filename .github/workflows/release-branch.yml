@@ -171,13 +171,13 @@ jobs:
       #  run: |
       #    az logout
       #  if: always()
-      - name: Upload Release Assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Upload Release Assets
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # clobber overwrites existing assets of the same name
-        run: |
-          gh release upload --clobber v${{env.VERSION}} \
-            $(find ./build/github/packages -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.pkg" -o -name "*.apk" \))
+      #  run: |
+      #    gh release upload --clobber v${{env.VERSION}} \
+      #      $(find ./build/github/packages -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.pkg" -o -name "*.apk" \))
       - name: Publish Release Packages
         if: ${{ inputs.publishPackages == true }}
         env:
