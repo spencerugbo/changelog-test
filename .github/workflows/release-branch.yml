@@ -55,7 +55,10 @@ jobs:
               per_page: 100,
             })).data
             
-            const latest_release = 'blah'
+            const latest_release = (await github.rest.repos.getLatestRelease({
+                owner: context.payload.repository.owner.login,
+                repo: context.payload.repository.name,
+            })).data.tag_name
             
             console.log(`The latest release was ${latest_release}`)
 
