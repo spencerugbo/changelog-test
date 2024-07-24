@@ -39,79 +39,79 @@ jobs:
           go-version-file: 'go.mod'
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
       - run: npm install semver@7.6.2
-     # - name: Create Draft Release
-     #   uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-     #   id: release
-     #   with:
-     #    script: |
-     #       const semver = require('semver');
-     #       const ref = context.ref.split("/")[2]
-     #       const version = ref.split("-")[1]
-     #       console.log(`The release version is v${version}`)
-     #       
-     #       const releases = (await github.rest.repos.listReleases({
-     #         owner: context.payload.repository.owner.login,
-     #         repo: context.payload.repository.name,
-     #         per_page: 100,
-     #       })).data
-     #       
-     #       const latest_release = (await github.rest.repos.getLatestRelease({
-     #           owner: context.payload.repository.owner.login,
-     #           repo: context.payload.repository.name,
-     #       })).data.tag_name
-     #       
-     #       console.log(`The latest release was ${latest_release}`)
-     #
-     #       if (latest_release === "v"+version) {
-     #           core.setFailed(`A published release already exists for ${latest_release}`)
-     #       } else {
-     #           const draft = releases.find((r) => r.draft && r.tag_name === "v"+version)
-     #           const draft_found = !(draft === undefined)
-     #           
-     #           let release
-     #           if (draft_found){
-     #           console.log("Draft release already exists. Deleting current draft release and recreating it")
-     #           release = (await github.rest.repos.deleteRelease({
-     #               owner: context.payload.repository.owner.login,
-     #               repo: context.payload.repository.name,
-     #               release_id: draft.id,
-     #           }))
-     #           }
-     #           
-     #           const release_notes = (await github.rest.repos.generateReleaseNotes({
-     #               owner: context.payload.repository.owner.login,
-     #               repo: context.payload.repository.name,
-     #               tag_name: "v"+version,
-     #               previous_tag_name: latest_release,
-     #               target_commitish: ref,
-     #           }))
-     #           
-     #           const footer = `
-     #       ## Resources
-     #      - Documentation -- https://github.com/nginx/agent#readme
-     #           `
-     #           
-     #           release = (await github.rest.repos.createRelease({
-     #               owner: context.payload.repository.owner.login,
-     #               repo: context.payload.repository.name,
-     #               tag_name: "v"+version,
-     #               target_commitish: ref,
-     #               name: "v"+version,
-     #               body: release_notes.data.body + footer,
-     #               draft: true,
-     #           }))
-     #           
-     #           console.log(`Release created: ${release.data.html_url}`)
-     #           console.log(`Release ID: ${release.data.id}`)
-     #           console.log(`Release notes: ${release_notes.data.body}`)
-     #           console.log(`Release Upload URL: ${release.data.upload_url}`)
-     #           
-     #           return {
-     #               version: version,
-     #               release_id: release.data.id,
-     #               release_upload_url: release.data.upload_url,
-     #           }
-     #       }
+      - name: Create Draft Release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: release
+        with:
+         script: |
+            const semver = require('semver');
+            const ref = context.ref.split("/")[2]
+            const version = ref.split("-")[1]
+            console.log(`The release version is v${version}`)
+            
+            const releases = (await github.rest.repos.listReleases({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              per_page: 100,
+            })).data
+            
+            const latest_release = (await github.rest.repos.getLatestRelease({
+                owner: context.payload.repository.owner.login,
+                repo: context.payload.repository.name,
+            })).data.tag_name
+            
+            console.log(`The latest release was ${latest_release}`)
+     
+            if (latest_release === "v"+version) {
+                core.setFailed(`A published release already exists for ${latest_release}`)
+            } else {
+                const draft = releases.find((r) => r.draft && r.tag_name === "v"+version)
+                const draft_found = !(draft === undefined)
+                
+                let release
+                if (draft_found){
+                console.log("Draft release already exists. Deleting current draft release and recreating it")
+                release = (await github.rest.repos.deleteRelease({
+                    owner: context.payload.repository.owner.login,
+                    repo: context.payload.repository.name,
+                    release_id: draft.id,
+                }))
+                }
+                
+                const release_notes = (await github.rest.repos.generateReleaseNotes({
+                    owner: context.payload.repository.owner.login,
+                    repo: context.payload.repository.name,
+                    tag_name: "v"+version,
+                    previous_tag_name: latest_release,
+                    target_commitish: ref,
+                }))
+                
+                const footer = `
+            ## Resources
+            - Documentation -- https://github.com/nginx/agent#readme
+                `
+                
+                release = (await github.rest.repos.createRelease({
+                    owner: context.payload.repository.owner.login,
+                    repo: context.payload.repository.name,
+                    tag_name: "v"+version,
+                    target_commitish: ref,
+                    name: "v"+version,
+                    body: release_notes.data.body + footer,
+                    draft: true,
+                }))
+                
+                console.log(`Release created: ${release.data.html_url}`)
+                console.log(`Release ID: ${release.data.id}`)
+                console.log(`Release notes: ${release_notes.data.body}`)
+                console.log(`Release Upload URL: ${release.data.upload_url}`)
+                
+                return {
+                    version: version,
+                    release_id: release.data.id,
+                    release_upload_url: release.data.upload_url,
+                }
+            }
       - name: Set Environment Variables
         run: |
           echo "${{steps.release.outputs.result}}"
