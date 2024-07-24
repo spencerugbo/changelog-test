@@ -122,10 +122,10 @@ jobs:
         run: |
           echo v"${{env.VERSION}}"
           pwd
-          git clone https://github.com/nginx/agent-changelog.git
+          git clone https://github.com/spencerugbo/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/tag/v1.1.0
+          python agent.py 
           cat changelog.md
       - name: Setup build environment
         run: |
