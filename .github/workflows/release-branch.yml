@@ -100,13 +100,13 @@ jobs:
                     tag_name: "v"+version,
                     target_commitish: ref,
                     name: "v"+version,
-                    body: release_notes.data.body + footer,
+                    body: release_notes + footer,
                     draft: true,
                 }))
                 
                 console.log(`Release created: ${release.data.html_url}`)
                 console.log(`Release ID: ${release.data.id}`)
-                console.log(`Release notes: ${release_notes.data.body}`)
+                console.log(`Release notes: release_notes`)
                 console.log(`Release Upload URL: ${release.data.upload_url}`)
                 
                 return {
