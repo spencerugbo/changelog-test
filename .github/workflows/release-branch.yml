@@ -118,6 +118,15 @@ jobs:
           echo "VERSION=$(echo '${{steps.release.outputs.result}}' | jq -r '.version')" >> $GITHUB_ENV
           echo "RELEASE_ID=$(echo '${{steps.release.outputs.result}}' | jq -r '.release_id')" >> $GITHUB_ENV
           echo "RELEASE_UPLOAD_URL=$(echo '${{steps.release.outputs.result}}' | jq -r '.release_upload_url')" >> $GITHUB_ENV
+      - name: Generate Changelog
+        run: |
+          echo v"${{env.VERSION}}"
+          pwd
+          git clone https://github.com/nginx/agent-changelog.git
+          cd ./agent-changelog/source
+          pip install -r requirements.txt
+          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/latest
+          cat changelog.md
       - name: Setup build environment
         run: |
           sudo apt-get update
@@ -148,36 +157,36 @@ jobs:
           no-cache: true
           build-args: |
             package_type=signed-package
-      - name: Build Packages
-        env:
-          INDIGO_GPG_AGENT: ${{ secrets.INDIGO_GPG_AGENT }}
-          NFPM_SIGNING_KEY_FILE: .key.asc
-        run: |
-          echo "$INDIGO_GPG_AGENT" | base64 --decode > .key.asc
-          make clean package
-      - name: Azure Login
-        uses: azure/login@6b2456866fc08b011acb422a92a4aa20e2c4de32 # v2.1.0
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure Upload Release Packages
-        uses: azure/CLI@965c8d7571d2231a54e321ddd07f7b10317f34d9 # v2.0.0
-        with:
-          inlineScript: |
-            for i in ./build/azure/packages/nginx-agent*; do 
-              az storage blob upload --auth-mode=login -f "$i" -c ${{ secrets.AZURE_CONTAINER_NAME }} \
-              --account-name ${{ secrets.AZURE_ACCOUNT_NAME }} --overwrite -n nginx-agent/${GITHUB_REF##*/}/${i##*/}
-            done 
-      - name: Azure Logout
-        run: |
-          az logout
-        if: always()
-      - name: Upload Release Assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Build Packages
+      #  env:
+      #    INDIGO_GPG_AGENT: ${{ secrets.INDIGO_GPG_AGENT }}
+      #    NFPM_SIGNING_KEY_FILE: .key.asc
+      #  run: |
+      #    echo "$INDIGO_GPG_AGENT" | base64 --decode > .key.asc
+      #    make clean package
+      #- name: Azure Login
+      #  uses: azure/login@6b2456866fc08b011acb422a92a4aa20e2c4de32 # v2.1.0
+      #  with:
+      #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+      #- name: Azure Upload Release Packages
+      #  uses: azure/CLI@965c8d7571d2231a54e321ddd07f7b10317f34d9 # v2.0.0
+      #  with:
+      #    inlineScript: |
+      #      for i in ./build/azure/packages/nginx-agent*; do 
+      #        az storage blob upload --auth-mode=login -f "$i" -c ${{ secrets.AZURE_CONTAINER_NAME }} \
+      #        --account-name ${{ secrets.AZURE_ACCOUNT_NAME }} --overwrite -n nginx-agent/${GITHUB_REF##*/}/${i##*/}
+      #      done 
+      #- name: Azure Logout
+      #  run: |
+      #    az logout
+      #  if: always()
+      #- name: Upload Release Assets
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # clobber overwrites existing assets of the same name
-        run: |
-          gh release upload --clobber v${{env.VERSION}} \
-            $(find ./build/github/packages -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.pkg" -o -name "*.apk" \))
+      #  run: |
+      #    gh release upload --clobber v${{env.VERSION}} \
+      #      $(find ./build/github/packages -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.pkg" -o -name "*.apk" \))
       - name: Publish Release Packages
         if: ${{ inputs.publishPackages == true }}
         env:
