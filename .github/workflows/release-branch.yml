@@ -78,15 +78,16 @@ jobs:
                 }))
                 }
                 
-                const release_notes = (await github.rest.repos.generateReleaseNotes({
-                    owner: context.payload.repository.owner.login,
-                    repo: context.payload.repository.name,
-                    tag_name: "v"+version,
-                    previous_tag_name: latest_release,
-                    target_commitish: ref,
-                }))
-
-                console.log(`Release Notes: release_notes`)
+                const release_notes = `
+            ## What's Changed
+            ### 🌟 Highlights
+            * R32 operating system support parity by @oliveromahony in https://github.com/nginx/agent/pull/708
+            ### 🐛 Bug Fixes
+            * Change environment prefix from nms to nginx_agent by @spencerugbo in https://github.com/nginx/agent/pull/706
+            ### 📝 Documentation
+            * Consolidated CLI flag and Env Var sections by @travisamartin in https://github.com/nginx/agent/pull/701
+            * Add Ubuntu Noble 24.04 LTS support by @Dean-Coakley in https://github.com/nginx/agent/pull/682
+                `
                 
                 const footer = `
             ## Resources
