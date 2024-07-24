@@ -125,7 +125,7 @@ jobs:
           git clone https://github.com/nginx/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py 
+          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/latest
           cat changelog.md
       - name: Setup build environment
         run: |
