@@ -85,6 +85,8 @@ jobs:
                     previous_tag_name: latest_release,
                     target_commitish: ref,
                 }))
+
+                console.log(`Release Notes: release_notes`)
                 
                 const footer = `
             ## Resources
