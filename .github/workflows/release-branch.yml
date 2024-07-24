@@ -125,7 +125,8 @@ jobs:
           git clone https://github.com/nginx/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py -u https://github.com/spencerugbo/changelog-test/tag/v"${{env.VERSION}}"
+          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/tag/v"${{env.VERSION}}"
+          cat changelog.md
       - name: Setup build environment
         run: |
           sudo apt-get update
