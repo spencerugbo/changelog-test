@@ -120,12 +120,12 @@ jobs:
           echo "RELEASE_UPLOAD_URL=$(echo '${{steps.release.outputs.result}}' | jq -r '.release_upload_url')" >> $GITHUB_ENV
       - name: Generate Changelog
         run: |
-          echo "${{env.VERSION}}"
+          echo v"${{env.VERSION}}"
           pwd
           git clone https://github.com/nginx/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/tag/v"${{env.VERSION}}"
+          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/latest"
           cat changelog.md
       - name: Setup build environment
         run: |
