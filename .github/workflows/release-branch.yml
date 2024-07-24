@@ -43,7 +43,7 @@ jobs:
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: release
         with:
-          script: |
+         script: |
             const semver = require('semver');
             const ref = context.ref.split("/")[2]
             const version = ref.split("-")[1]
@@ -61,7 +61,7 @@ jobs:
             })).data.tag_name
             
             console.log(`The latest release was ${latest_release}`)
-
+     
             if (latest_release === "v"+version) {
                 core.setFailed(`A published release already exists for ${latest_release}`)
             } else {
@@ -122,10 +122,10 @@ jobs:
         run: |
           echo v"${{env.VERSION}}"
           pwd
-          git clone https://github.com/nginx/agent-changelog.git
+          git clone https://github.com/spencerugbo/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py -u https://github.com/spencerugbo/changelog-test/releases/latest
+          python agent.py 
           cat changelog.md
       - name: Setup build environment
         run: |
