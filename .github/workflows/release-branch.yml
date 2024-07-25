@@ -121,15 +121,6 @@ jobs:
           echo "VERSION=$(echo '${{steps.release.outputs.result}}' | jq -r '.version')" >> $GITHUB_ENV
           echo "RELEASE_ID=$(echo '${{steps.release.outputs.result}}' | jq -r '.release_id')" >> $GITHUB_ENV
           echo "RELEASE_UPLOAD_URL=$(echo '${{steps.release.outputs.result}}' | jq -r '.release_upload_url')" >> $GITHUB_ENV
-      - name: Generate Changelog
-        run: |
-          echo v"${{env.VERSION}}"
-          pwd
-          git clone https://github.com/spencerugbo/agent-changelog.git
-          cd ./agent-changelog/source
-          pip install -r requirements.txt
-          python agent.py 
-          cat changelog.md
       - name: Setup build environment
         run: |
           sudo apt-get update
@@ -210,6 +201,15 @@ jobs:
               draft: false,
             }))
             console.log(`Release published: ${release.data.html_url}`)
+      - name: Generate Changelog
+        run: |
+          echo v"${{env.VERSION}}"
+          pwd
+          git clone https://github.com/spencerugbo/agent-changelog.git
+          cd ./agent-changelog/source
+          pip install -r requirements.txt
+          python agent.py 
+          cat changelog.md
       - name: Create Pull Request
         if: ${{ inputs.publishPackages == true && inputs.createPullRequest == true }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
