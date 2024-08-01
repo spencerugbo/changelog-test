@@ -125,7 +125,7 @@ jobs:
           go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.35.3
       - name: Generate Changelog
         env:
-            MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo v"${{env.VERSION}}"
           curl -H "Authorization: token $MY_GITHUB_PAT" \
