@@ -80,13 +80,10 @@ jobs:
                 
                 const release_notes = `
             ## What's Changed
-            ### 🌟 Highlights
-            * R32 operating system support parity by @oliveromahony in https://github.com/nginx/agent/pull/708
             ### 🐛 Bug Fixes
-            * Change environment prefix from nms to nginx_agent by @spencerugbo in https://github.com/nginx/agent/pull/706
+            * Fix metrics reporter retry logic by @dhurley in https://github.com/nginx/agent/pull/700
             ### 📝 Documentation
-            * Consolidated CLI flag and Env Var sections by @travisamartin in https://github.com/nginx/agent/pull/701
-            * Add Ubuntu Noble 24.04 LTS support by @Dean-Coakley in https://github.com/nginx/agent/pull/682
+            * Update changelog for release 2.34 by @ADubhlaoich in https://github.com/nginx/agent/pull/693
                 `
                 
                 const footer = `
@@ -126,6 +123,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gpgv1 monkeysphere 
           go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.35.3
+      - name: Generate Changelog
+        env:
+            MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
+        run: |
+          echo v"${{env.VERSION}}"
+          curl -H "Authorization: token $MY_GITHUB_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/releases
+          git clone https://github.com/spencerugbo/agent-changelog.git
+          cd ./agent-changelog/source
+          pip install -r requirements.txt
+          python agent.py 
+          cat changelog.md
       - name: Tag release
         run: |
           git config --global user.name 'github-actions'
@@ -189,6 +199,7 @@ jobs:
         run: |
           make release
       - name: Publish Github Release
+        if: ${{ inputs.publishPackages == true }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
@@ -200,15 +211,6 @@ jobs:
               draft: false,
             }))
             console.log(`Release published: ${release.data.html_url}`)
-      - name: Generate Changelog
-        run: |
-          echo v"${{env.VERSION}}"
-          pwd
-          git clone https://github.com/spencerugbo/agent-changelog.git
-          cd ./agent-changelog/source
-          pip install -r requirements.txt
-          python agent.py 
-          cat changelog.md
       - name: Create Pull Request
         if: ${{ inputs.publishPackages == true && inputs.createPullRequest == true }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
