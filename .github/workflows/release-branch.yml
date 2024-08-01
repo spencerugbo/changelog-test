@@ -134,7 +134,7 @@ jobs:
           git clone https://github.com/spencerugbo/agent-changelog.git
           cd ./agent-changelog/source
           pip install -r requirements.txt
-          python agent.py 
+          python agent2.py 
           cat changelog.md
       - name: Tag release
         run: |
