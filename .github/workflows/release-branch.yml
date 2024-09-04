@@ -125,7 +125,7 @@ jobs:
         run: |
           pwd
           git clone https://github.com/spencerugbo/agent-changelog.git
-          pip install -r ./source/requirements.txt
+          pip install -r .agent-changelog/source/requirements.txt
           cd ./agent-changelog/old
           python agent.py -r nginx/agent
           cat changelog.md
