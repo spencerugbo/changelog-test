@@ -127,7 +127,7 @@ jobs:
           git clone https://github.com/spencerugbo/agent-changelog.git
           pip install -r ./agent-changelog/source/requirements.txt
           cd ./agent-changelog/old
-          python agent.py -r nginx/agent
+          python agent.py 
           cat changelog.md
       - name: Push Changelog
         run: |
